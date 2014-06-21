@@ -23,6 +23,7 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 		'wpdb_prefix' => 'wpsrvv_'
 	);
 	
+	var $survey_id = 10;
 	var $con;
 	
 	public function setUp(){
@@ -37,6 +38,7 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 		
 		foreach( $this->users as $user_name => $user_pass ):
 			$user_id = $this->add_user( $user_name, $user_pass );
+			$this->add_user_to_survey( $user_id, $this->survey_id );
 			
 			$this->open( "wp-login.php" );
 			$this->type( "id=user_login", $user_name );
@@ -93,15 +95,25 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 		$sql = sprintf( "INSERT INTO `{$table_usermeta}` (`user_id`, `meta_key`, `meta_value`) VALUES ( '%s', '%s', '%s')", $user_id, $meta_key , $meta_value );
 		$result = mysql_query( $sql ); 
 	}
+
+	private function add_user_to_survey( $user_id, $survey_id ){
+		$table_participiants = $this->db_data[ 'wpdb_prefix' ] . 'surveyval_participiants';
+		$sql = sprintf( "INSERT INTO `{$table_participiants}` (`survey_id`, `user_id`) VALUES ( '%d', '%d')", $survey_id, $user_id );
+		$result = mysql_query( $sql ); 
+	}
 	
 	private function delete_user( $user_id ){
 		$table_users = $this->db_data[ 'wpdb_prefix' ] . 'users';
 		$table_usermeta = $this->db_data[ 'wpdb_prefix' ] . 'usermeta';
+		$table_participiants = $this->db_data[ 'wpdb_prefix' ] . 'surveyval_participiants';
 		
 		$sql = sprintf( "DELETE FROM `{$table_users}` WHERE ID = '%d'", $user_id );
 		$result = mysql_query( $sql );
 		
 		$sql = sprintf( "DELETE FROM `{$table_usermeta}` WHERE user_id = '%d'", $user_id );
+		$result = mysql_query( $sql ); 
+		
+		$sql = sprintf( "DELETE FROM `{$table_participiants}` WHERE user_id = '%d'", $user_id );
 		$result = mysql_query( $sql ); 
 	}
 }
