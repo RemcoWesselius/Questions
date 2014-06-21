@@ -13,6 +13,10 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 		'test4' => 'test4',
 		'test5' => 'test5',
 		'test6' => 'test6',
+		'test7' => 'test7',
+		'test8' => 'test8',
+		'test9' => 'test9',
+		'test10' => 'test10',
 	);
 	
 	var $db_data = array(
@@ -109,7 +113,7 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 		    $this->click("name=surveyval_submission");
 		    $this->waitForPageToLoad("30000");
 			
-		    $this->waitForPageToLoad( "30000" );
+			sleep( 2 );
 			
 			$this->delete_user( $user_id );
 		endforeach;
