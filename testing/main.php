@@ -26,6 +26,10 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 	var $survey_id = 10;
 	var $con;
 	
+	protected $screenshotPath = 'C:/xampp/htdocs/surveyval';
+	protected $captureScreenshotOnFailure = TRUE;
+	protected $screenshotUrl = 'http://localhost/surveyval';
+	
 	public function setUp(){
 		$this->setBrowser( $this->browser );
 		$this->setBrowserUrl( $this->browser_url );
@@ -45,10 +49,127 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 			$this->type( "id=user_pass", $user_pass );
 			$this->click( "id=wp-submit" );
 			
+			sleep( 2 );
+			
+			$this->open("survey/check-melle/");
+			$this->waitForPageToLoad("30000");
+			
+			sleep( 2 );
+						
+		    $this->click("name=surveyval_submission");
+		    $this->waitForPageToLoad("30000");
+		    $this->click("name=surveyval_response[101][]");
+		    $this->click("document.surveyval.elements['surveyval_response[101][]'][8]");
+		    $this->click("document.surveyval.elements['surveyval_response[101][]'][16]");
+		    $this->click("document.surveyval.elements['surveyval_response[101][]'][24]");
+		    $this->click("document.surveyval.elements['surveyval_response[101][]'][32]");
+		    $this->click("document.surveyval.elements['surveyval_response[101][]'][40]");
+		    $this->click("document.surveyval.elements['surveyval_response[101][]'][48]");
+		    $this->click("name=surveyval_submission");
+		    $this->waitForPageToLoad("30000");
+		    $this->select("name=surveyval_response[105]", "label=5");
+		    $this->type("name=surveyval_response[106]", "30");
+		    $this->select("name=surveyval_response[109]", "label=5");
+		    $this->type("name=surveyval_response[110]", "35");
+		    $this->select("name=surveyval_response[113]", "label=5");
+		    $this->type("name=surveyval_response[114]", "40");
+		    $this->type("name=surveyval_response[115]", "100");
+		    $this->type("name=surveyval_response[117]", "190");
+		    $this->type("name=surveyval_response[118]", "100");
+		    $this->select("name=surveyval_response[119]", "label=Ja");
+		    $this->select("name=surveyval_response[120]", "label=Mehr als 30");
+		    $this->click("name=surveyval_submission");
+		    $this->waitForPageToLoad("30000");
+		    $this->type("name=surveyval_response[115]", "8");
+		    $this->click("name=surveyval_submission");
+		    $this->waitForPageToLoad("30000");
+		    $this->click("name=surveyval_response[122][]");
+		    $this->click("document.surveyval.elements['surveyval_response[122][]'][9]");
+		    $this->click("document.surveyval.elements['surveyval_response[122][]'][18]");
+		    $this->click("document.surveyval.elements['surveyval_response[122][]'][27]");
+		    $this->click("document.surveyval.elements['surveyval_response[122][]'][36]");
+		    $this->click("document.surveyval.elements['surveyval_response[122][]'][45]");
+		    $this->click("document.surveyval.elements['surveyval_response[122][]'][54]");
+		    $this->click("document.surveyval.elements['surveyval_response[122][]'][72]");
+		    $this->click("name=surveyval_submission");
+		    $this->waitForPageToLoad("30000");
+		    $this->click("document.surveyval.elements['surveyval_response[122][]'][63]");
+		    $this->click("name=surveyval_submission_back");
+		    $this->waitForPageToLoad("30000");
+		    $this->click("name=surveyval_submission_back");
+		    $this->waitForPageToLoad("30000");
+		    $this->click("document.surveyval.elements['surveyval_response[101][]'][48]");
+		    $this->click("name=surveyval_submission");
+		    $this->waitForPageToLoad("30000");
+		    $this->click("document.surveyval.elements['surveyval_response[101][]'][48]");
+		    $this->click("name=surveyval_submission");
+		    $this->waitForPageToLoad("30000");
+		    $this->click("name=surveyval_submission");
+		    $this->waitForPageToLoad("30000");
+		    $this->click("name=surveyval_submission");
+		    $this->waitForPageToLoad("30000");
+			
 		    $this->waitForPageToLoad( "30000" );
 			
 			$this->delete_user( $user_id );
 		endforeach;
+	}
+	
+	private function run1(){
+		$this->open("survey/check-melle/");
+		$this->waitForPageToLoad("300000");
+	    $this->click("name=surveyval_submission");
+	    $this->waitForPageToLoad("30000");
+	    $this->click("name=surveyval_response[101][]");
+	    $this->click("document.surveyval.elements['surveyval_response[101][]'][8]");
+	    $this->click("document.surveyval.elements['surveyval_response[101][]'][16]");
+	    $this->click("document.surveyval.elements['surveyval_response[101][]'][24]");
+	    $this->click("document.surveyval.elements['surveyval_response[101][]'][32]");
+	    $this->click("document.surveyval.elements['surveyval_response[101][]'][40]");
+	    $this->click("document.surveyval.elements['surveyval_response[101][]'][48]");
+	    $this->click("name=surveyval_submission");
+	    $this->waitForPageToLoad("30000");
+	    $this->select("name=surveyval_response[105]", "label=5");
+	    $this->type("name=surveyval_response[106]", "30");
+	    $this->select("name=surveyval_response[109]", "label=5");
+	    $this->type("name=surveyval_response[110]", "35");
+	    $this->select("name=surveyval_response[113]", "label=5");
+	    $this->type("name=surveyval_response[114]", "40");
+	    $this->type("name=surveyval_response[115]", "100");
+	    $this->type("name=surveyval_response[117]", "190");
+	    $this->type("name=surveyval_response[118]", "100");
+	    $this->select("name=surveyval_response[119]", "label=Ja");
+	    $this->select("name=surveyval_response[120]", "label=Mehr als 30");
+	    $this->click("name=surveyval_submission");
+	    $this->waitForPageToLoad("30000");
+	    $this->type("name=surveyval_response[115]", "8");
+	    $this->click("name=surveyval_submission");
+	    $this->waitForPageToLoad("30000");
+	    $this->click("name=surveyval_response[122][]");
+	    $this->click("document.surveyval.elements['surveyval_response[122][]'][9]");
+	    $this->click("document.surveyval.elements['surveyval_response[122][]'][18]");
+	    $this->click("document.surveyval.elements['surveyval_response[122][]'][27]");
+	    $this->click("document.surveyval.elements['surveyval_response[122][]'][36]");
+	    $this->click("document.surveyval.elements['surveyval_response[122][]'][45]");
+	    $this->click("document.surveyval.elements['surveyval_response[122][]'][54]");
+	    $this->click("document.surveyval.elements['surveyval_response[122][]'][72]");
+	    $this->click("name=surveyval_submission");
+	    $this->waitForPageToLoad("30000");
+	    $this->click("document.surveyval.elements['surveyval_response[122][]'][63]");
+	    $this->click("name=surveyval_submission_back");
+	    $this->waitForPageToLoad("30000");
+	    $this->click("name=surveyval_submission_back");
+	    $this->waitForPageToLoad("30000");
+	    $this->click("document.surveyval.elements['surveyval_response[101][]'][48]");
+	    $this->click("name=surveyval_submission");
+	    $this->waitForPageToLoad("30000");
+	    $this->click("document.surveyval.elements['surveyval_response[101][]'][48]");
+	    $this->click("name=surveyval_submission");
+	    $this->waitForPageToLoad("30000");
+	    $this->click("name=surveyval_submission");
+	    $this->waitForPageToLoad("30000");
+	    $this->click("name=surveyval_submission");
+	    $this->waitForPageToLoad("30000");
 	}
 	
 	private function connect_db(){
