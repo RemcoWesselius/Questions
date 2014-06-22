@@ -10,7 +10,31 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 	
 	var $browser = '*firefox';
 	var $users = array(
-		'peter' => 'mustermann',
+		'test1' => array( 
+			'name' => 'test1',
+			'pass' => '1234567890',
+			'role' => 'administrator',
+		),
+		'test2' => array( 
+			'name' => 'test2',
+			'pass' => '1234567890',
+			'role' => 'editor',
+		),
+		'test3' => array( 
+			'name' => 'test3',
+			'pass' => '1234567890',
+			'role' => 'author',
+		),
+		'test4' => array( 
+			'name' => 'test4',
+			'pass' => '1234567890',
+			'role' => 'contributor',
+		),
+		'test5' => array( 
+			'name' => 'test5',
+			'pass' => '1234567890',
+			'role' => 'subscriber',
+		),
 		/*'test2' => 'test2',
 		'test3' => 'test3',
 		'test4' => 'test4',
@@ -40,29 +64,40 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 		$user_ids = array();
 		$this->generate_scripts();
 		
-		foreach( $this->users as $user_name => $user_pass ):
-			$user_id = wp_create_user( $user_name, $user_pass, $user_name . '@test.com' );
-			// $this->add_user_to_survey( $user_id, $this->survey_id );
+		foreach( $this->users as $user ):
+			// Create the user
+			$user_data = array (
+		        'user_login' => $user['name'],
+		        'user_pass' => $user['pass'],     
+		        'user_email' => $user['name'] . '@test.com',
+		        'role' => $user['role']
+		    );
+    		
+    		$user_id = wp_insert_user( $user_data );
+			$this->add_user_to_survey( $user_id, $this->survey_id );
 			
 			$this->open( "wp-login.php" );
-			$this->type( "id=user_login", $user_name );
-			$this->type( "id=user_pass", $user_pass );
+			$this->type( "id=user_login", $user['name'] );
+			$this->type( "id=user_pass", $user['pass'] );
 			$this->click( "id=wp-submit" );
 			sleep( 2 );
 			
 			$this->open("survey/check-melle/");
 			$this->waitForPageToLoad("30000");
 			
-		    $this->run1();
+		    $this->run1( $user_id );
 			
 			wp_delete_user( $user_id );
 			
 		endforeach;
 	}
 	
-	private function run1(){
+	private function run1( $user_id ){
 		$values = array();
 		$values[ 101 ] = array( 8, 16, 24, 32, 40, 48 );
+		
+		foreach( $values[ 101 ] AS $value ):
+		endforeach;
 		$values[ 105 ] = '7';
 		$values[ 106 ] = '5';
 		$values[ 109 ] = '7';
@@ -76,105 +111,10 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 		$values[ 120 ] = '21-30';
 		$values[ 122 ] = array( 9, 18, 27, 36, 45, 54, 63, 72 );
 		
-		$this->click("name=surveyval_response[101][]");
-		foreach( $values[ 101 ] AS $value ) $this->click("document.surveyval.elements['surveyval_response[101][]'][" . $value . "]");
-		$this->click("name=surveyval_submission");
-		$this->waitForPageToLoad("30000");
-		sleep(2);
-		$this->select("name=surveyval_response[105]", "label=" . $values[ 105 ]);
-		$this->type("name=surveyval_response[106]",  $values[ 106 ] );
-		$this->select("name=surveyval_response[109]", "label=" . $values[ 109 ]);
-		$this->type("name=surveyval_response[110]",  $values[ 110 ] );
-		$this->select("name=surveyval_response[113]", "label=" . $values[ 113 ]);
-		$this->type("name=surveyval_response[114]",  $values[ 114 ] );
-		$this->type("name=surveyval_response[115]",  $values[ 115 ] );
-		$this->type("name=surveyval_response[117]",  $values[ 117 ] );
-		$this->type("name=surveyval_response[118]",  $values[ 118 ] );
-		$this->select("name=surveyval_response[119]", "label=" . $values[ 119 ]);
-		$this->select("name=surveyval_response[120]", "label=" . $values[ 120 ]);
-		$this->click("name=surveyval_submission");
-		$this->waitForPageToLoad("30000");
-		sleep(2);
-		$this->click("name=surveyval_response[122][]");
-		foreach( $values[ 122 ] AS $value ) $this->click("document.surveyval.elements['surveyval_response[122][]'][" . $value . "]");
-		$this->click("name=surveyval_submission");
-		$this->waitForPageToLoad("30000");
-		sleep(5);
-		
-		$response_id = $this->getValue( 'response_id' );
-		
-		foreach( $values[ 101 ] AS $value ) $sql[ 101 ][] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='101' AND respond_id='" . $response_id. "' AND value='" . $value . "'";
-		$sql[ 105 ] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='105' AND respond_id='" . $response_id. "' AND value='" . $values[105] . "'";
-		$sql[ 106 ] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='106' AND respond_id='" . $response_id. "' AND value='" . $values[106] . "'";
-		$sql[ 109 ] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='109' AND respond_id='" . $response_id. "' AND value='" . $values[109] . "'";
-		$sql[ 110 ] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='110' AND respond_id='" . $response_id. "' AND value='" . $values[110] . "'";
-		$sql[ 113 ] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='113' AND respond_id='" . $response_id. "' AND value='" . $values[113] . "'";
-		$sql[ 114 ] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='114' AND respond_id='" . $response_id. "' AND value='" . $values[114] . "'";
-		$sql[ 115 ] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='115' AND respond_id='" . $response_id. "' AND value='" . $values[115] . "'";
-		$sql[ 117 ] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='117' AND respond_id='" . $response_id. "' AND value='" . $values[117] . "'";
-		$sql[ 118 ] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='118' AND respond_id='" . $response_id. "' AND value='" . $values[118] . "'";
-		$sql[ 119 ] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='119' AND respond_id='" . $response_id. "' AND value='" . $values[119] . "'";
-		$sql[ 120 ] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='120' AND respond_id='" . $response_id. "' AND value='" . $values[120] . "'";
-		foreach( $values[ 122 ] AS $value ) $sql[ 122 ][] = "SELECT * FROM wpsrvv_surveyval_respond_answers WHERE question_id='122' AND respond_id='" . $response_id. "' AND value='" . $value . "'";
-
-		$this->check_db_values( $sql );
-		/*
-		$this->click("name=surveyval_submission");
-	    $this->waitForPageToLoad("30000");
-	    $this->click("name=surveyval_response[101][]");
-	    $this->click("document.surveyval.elements['surveyval_response[101][]'][8]");
-	    $this->click("document.surveyval.elements['surveyval_response[101][]'][16]");
-	    $this->click("document.surveyval.elements['surveyval_response[101][]'][24]");
-	    $this->click("document.surveyval.elements['surveyval_response[101][]'][32]");
-	    $this->click("document.surveyval.elements['surveyval_response[101][]'][40]");
-	    $this->click("document.surveyval.elements['surveyval_response[101][]'][48]");
-	    $this->click("name=surveyval_submission");
-	    $this->waitForPageToLoad("30000");
-	    $this->select("name=surveyval_response[105]", "label=5");
-	    $this->type("name=surveyval_response[106]", "30");
-	    $this->select("name=surveyval_response[109]", "label=5");
-	    $this->type("name=surveyval_response[110]", "35");
-	    $this->select("name=surveyval_response[113]", "label=5");
-	    $this->type("name=surveyval_response[114]", "40");
-	    $this->type("name=surveyval_response[115]", "100");
-	    $this->type("name=surveyval_response[117]", "190");
-	    $this->type("name=surveyval_response[118]", "100");
-	    $this->select("name=surveyval_response[119]", "label=Ja");
-	    $this->select("name=surveyval_response[120]", "label=Mehr als 30");
-	    $this->click("name=surveyval_submission");
-	    $this->waitForPageToLoad("30000");
-	    $this->type("name=surveyval_response[115]", "8");
-	    $this->click("name=surveyval_submission");
-	    $this->waitForPageToLoad("30000");
-	    $this->click("name=surveyval_response[122][]");
-	    $this->click("document.surveyval.elements['surveyval_response[122][]'][9]");
-	    $this->click("document.surveyval.elements['surveyval_response[122][]'][18]");
-	    $this->click("document.surveyval.elements['surveyval_response[122][]'][27]");
-	    $this->click("document.surveyval.elements['surveyval_response[122][]'][36]");
-	    $this->click("document.surveyval.elements['surveyval_response[122][]'][45]");
-	    $this->click("document.surveyval.elements['surveyval_response[122][]'][54]");
-	    $this->click("document.surveyval.elements['surveyval_response[122][]'][72]");
-	    $this->click("name=surveyval_submission");
-	    $this->waitForPageToLoad("30000");
-	    $this->click("document.surveyval.elements['surveyval_response[122][]'][63]");
-	    $this->click("name=surveyval_submission_back");
-	    $this->waitForPageToLoad("30000");
-	    $this->click("name=surveyval_submission_back");
-	    $this->waitForPageToLoad("30000");
-	    $this->click("document.surveyval.elements['surveyval_response[101][]'][48]");
-	    $this->click("name=surveyval_submission");
-	    $this->waitForPageToLoad("30000");
-	    $this->click("document.surveyval.elements['surveyval_response[101][]'][48]");
-	    $this->click("name=surveyval_submission");
-	    $this->waitForPageToLoad("30000");
-	    $this->click("name=surveyval_submission");
-	    $this->waitForPageToLoad("30000");
-	    $this->click("name=surveyval_submission");
-	    $this->waitForPageToLoad("30000");
-		*/
+		include( 'testrun.php' );
 	}
 
-	private function check_db_values( $sqls ){
+	private function check_db_values( $sqls, $user_id ){
 		global $wpdb;
 		$results_log = '';
 		
@@ -183,23 +123,23 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 				foreach( $query  AS $subquery ):
 					$wpdb->get_results( $subquery );
 					if( $wpdb->num_rows === 0 ):
-						$results_log .= 'Value Failed: ' . $subquery . chr(13);
+						$results_log .= 'FAILED: ' . $subquery . chr(13);
 					else:
-						$results_log .= 'Value Matched!' . chr( 13 );
+						$results_log .= 'MATCHED: ' . $subquery.  chr( 13 );
 					endif;
 				endforeach;
 			else:
 				$wpdb->get_results( $query );
 				if( $wpdb->num_rows === 0 ):
-					$results_log .= 'Value Failed: ' . $query . chr(13);
+					$results_log .= 'FAILED: ' . $query . chr(13);
 				else:
-					$results_log .= 'Value Matched!' . chr( 13 );
+					$results_log .= 'MATCHED: ' . $query . chr( 13 );
 				endif;
 			endif;
 			
 		endforeach;
 		
-		$file = fopen( 'results.log', 'w' );
+		$file = fopen( 'results_user_' . $user_id . '.log', 'w' );
 		fputs( $file, $results_log );
 		fclose( $file );
 		
@@ -228,7 +168,7 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 		
 		return $con;
 	}
-	
+
 	private function add_user_to_survey( $user_id, $survey_id ){
 		$table_participiants = $this->db_data[ 'wpdb_prefix' ] . 'surveyval_participiants';
 		$sql = sprintf( "INSERT INTO `{$table_participiants}` (`survey_id`, `user_id`) VALUES ( '%d', '%d')", $survey_id, $user_id );
@@ -282,12 +222,26 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 				case 'SurveyVal_SurveyElement_Matrix':
 					$values_code.= '$values[ ' . $element->id .' ] = array(\'\');' . chr( 13 );
 					
+					$combine_values = array();
+					$columns = $element->get_columns();
+					$rows = $element->get_rows();
+					
+					$i = 0;
+					
+					foreach( $rows AS $row ):
+						foreach( $columns AS $column ):
+							$combine_values[] = $i++ . ' => \'' . $row['id'] . ':' . $column['id'] . '\'';
+						endforeach;
+					endforeach;
+					
+					$select_code.= '$combined_values[ ' . $element->id .' ] = array( ' . implode( ', ', $combine_values ) . ');' . chr( 13 );
+					
 					$click_code.= '$this->click("name=surveyval_response[' . $element->id . '][]");' . chr( 13 );
 					$click_code.= 'foreach( $values[ ' . $element->id . ' ] AS $value ) ';
 					$click_code.= '$this->click("document.surveyval.elements[\'surveyval_response[' . $element->id . '][]\'][" . $value . "]");' . chr( 13 );
 					
 					$select_code.= 'foreach( $values[ ' . $element->id . ' ] AS $value ) ';
-					$select_code.= '$sql[ ' . $element->id . ' ][] = "SELECT * FROM ' . $wpdb->prefix. 'surveyval_respond_answers WHERE question_id=\'' . $element->id . '\' AND respond_id=\'" . $response_id. "\' AND value=\'" . $value . "\'";' . chr( 13 );
+					$select_code.= '$sql[ ' . $element->id . ' ][] = "SELECT * FROM ' . $wpdb->prefix. 'surveyval_respond_answers WHERE question_id=\'' . $element->id . '\' AND respond_id=\'" . $response_id. "\' AND value=\'" . $combined_values[' . $element->id . '][ $value ] . "\'";' . chr( 13 );
 					
 					break;
 				case 'SurveyVal_SurveyElement_Range':
@@ -314,15 +268,17 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 		$click_code.= '$this->waitForPageToLoad("30000");' . chr( 13 );
 		$click_code.= 'sleep(2);' . chr( 13 );
 		
+		$click_code.= '$response_id = $this->getValue( \'response_id\' );' . chr( 13 );
+		
+		$select_code.= '$this->check_db_values( $sql, $user_id );' . chr( 13 );
+		
 		$code = '<?php' . chr( 13 ) . chr( 13 );
-		$code.= $values_code . chr( 13 );
+		$code.= '/* You can fill in this value array within your test function' . chr( 13 ) . $values_code . '*/' . chr(13) . chr(13);
 		$code.= $click_code . chr( 13 );
 		$code.= $select_code . chr( 13 );
 		
-		$file = fopen( 'generated-script.php', 'w' );
+		$file = fopen( 'testrun.php', 'w' );
 		fputs( $file, $code );
 		fclose( $file );
-		
-		print_r( $values_code );
 	}
 }
