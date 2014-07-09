@@ -76,6 +76,8 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
     		$user_id = wp_insert_user( $user_data );
 			$this->add_user_to_survey( $user_id, $this->survey_id );
 			
+			$this->log_line( 'Added User ID: ' . $user_id . ' on Survey ID: ' . $survey_id );
+			
 			$this->open( "wp-login.php" );
 			$this->type( "id=user_login", $user['name'] );
 			$this->type( "id=user_pass", $user['pass'] );
@@ -145,34 +147,23 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 		
 	}
 	
-	private function connect_db(){
-		$con = mysql_connect( $this->db_data[ 'host' ], $this->db_data[ 'user' ], $this->db_data[ 'pass' ] );
-		
-		// Check connection
-		if ( !$con ) {
-		    die( 'Verbindung schlug fehl: ' . mysql_error() );
-		}
-
-		mysql_select_db( $this->db_data[ 'db' ], $con ) or die( 'Datenbank konnte nicht erreichbar.' );
-		
-		/*
-		$table = $this->db_data[ 'wpdb_prefix' ] . 'users';
-		
-		$query = "SELECT * FROM {$table}";
-		$result = mysql_query( $query ); 
-		
-		while( $row = mysql_fetch_row( $result ) ):
-			print_r( $row );
-		endwhile;
-		 */
-		
-		return $con;
-	}
-
 	private function add_user_to_survey( $user_id, $survey_id ){
-		$table_participiants = $this->db_data[ 'wpdb_prefix' ] . 'surveyval_participiants';
-		$sql = sprintf( "INSERT INTO `{$table_participiants}` (`survey_id`, `user_id`) VALUES ( '%d', '%d')", $survey_id, $user_id );
-		$result = mysql_query( $sql ); 
+		global $wpdb;
+		
+		$wpdb->insert( 
+			$wpdb->prefix . 'surveyval_participiants', 
+			array( 
+				'survey_id' => $survey_id, 
+				'user_id' => $user_id 
+			), 
+			array( 
+				'%d', 
+				'%d' 
+			) 
+		);
+		
+		$this->log_line( print_r( $wpdb, TRUE ) );
+
 	}
 	
 	private function generate_scripts(){
@@ -279,6 +270,12 @@ class SurveyvalTests extends PHPUnit_Extensions_SeleniumTestCase{
 		
 		$file = fopen( 'testrun.php', 'w' );
 		fputs( $file, $code );
+		fclose( $file );
+	}
+
+	private function log_line( $line ){
+		$file = fopen( 'surveyval.log', 'w' );
+		fputs( $file, $line . chr( 13 ) );
 		fclose( $file );
 	}
 }
